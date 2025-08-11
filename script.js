@@ -1358,8 +1358,8 @@ class BlackHoleSimulator {
         // 移除菜单
         document.querySelector('.preset-menu')?.remove();
         
-        // 显示提示
-        this.showNotification(`已应用预设: ${preset.name}`);
+        // 显示提示（居中）
+        this.showNotificationCenter(`已应用预设: ${preset.name}`);
     }
     
     // 截图功能
@@ -1395,6 +1395,29 @@ class BlackHoleSimulator {
             notification.classList.remove('show');
             setTimeout(() => notification.remove(), 300);
         }, 2000);
+    }
+
+    // 居中通知（用于应用预设等场景）
+    showNotificationCenter(message) {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = message;
+        notification.style.position = 'fixed';
+        notification.style.top = '50%';
+        notification.style.left = '50%';
+        notification.style.transform = 'translate(-50%, -50%)';
+        notification.style.zIndex = '9999';
+        notification.style.pointerEvents = 'none';
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.classList.add('show');
+        }, 50);
+
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 250);
+        }, 1200);
     }
 }
 
