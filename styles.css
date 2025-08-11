@@ -2990,3 +2990,9 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
         flex-wrap: wrap;
     }
 }
+
+/* 快捷操作标题与按钮组之间的间距 */
+.quick-actions-compact h4 {
+    margin: 0 0 12px 0; /* 标题下方留出空间 */
+    text-align: center;
+}
