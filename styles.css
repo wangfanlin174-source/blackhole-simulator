@@ -2244,6 +2244,41 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
     to { transform: rotate(360deg); }
 }
 
+/* 全局通知样式（顶部居中，避免出现在页面最下方） */
+.notification {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #1d1d1f;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+@media (max-width: 768px) {
+    .notification {
+        top: 12px;
+        padding: 8px 14px;
+        font-size: 13px;
+    }
+}
+
 /* 触摸支持和移动端优化 */
 @media (hover: none) and (pointer: coarse) {
     /* 触摸设备优化 */
