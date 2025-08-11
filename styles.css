@@ -2463,7 +2463,7 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
 
 /* 严格居中：按钮行宽度=内容宽度，水平自动外边距居中 */
 .quick-buttons {
-    display: inline-flex;
+    display: flex; /* 改为块级 flex，让 margin:0 auto 生效 */
     gap: 10px;
     align-items: center;
     flex-wrap: nowrap;
