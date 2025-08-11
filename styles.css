@@ -2273,7 +2273,8 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
 
 /* 居中通知：保持垂直水平居中，不参与Y方向动画 */
 .notification.center {
-    top: 50%;
+    top: 50vh;
+    left: 50vw;
     transform: translate(-50%, -50%);
 }
 .notification.center.show {

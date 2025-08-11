@@ -1403,8 +1403,8 @@ class BlackHoleSimulator {
         notification.className = 'notification center';
         notification.textContent = message;
         notification.style.position = 'fixed';
-        notification.style.top = '50%';
-        notification.style.left = '50%';
+        notification.style.top = '50vh';
+        notification.style.left = '50vw';
         notification.style.transform = 'translate(-50%, -50%)';
         notification.style.zIndex = '9999';
         notification.style.pointerEvents = 'none';
