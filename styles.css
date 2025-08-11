@@ -2455,6 +2455,7 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
 /* 快捷操作紧凑版 */
 .quick-actions-compact {
     margin-top: 20px;
+    margin-bottom: 16px; /* 增加与下方的间距 */
     display: flex;
     flex-direction: column;
     align-items: center;
