@@ -307,10 +307,15 @@
                     <!-- 黑洞基本参数 -->
                     <div class="parameter-section">
                         <h4>黑洞属性</h4>
+                        <div class="preset-quick">
+                            <button class="preset-chip" onclick="window.blackHoleSimulator?.applyPreset({name:'小型黑洞', mass:5, spin:0.3, particles:300})">小型黑洞</button>
+                            <button class="preset-chip" onclick="window.blackHoleSimulator?.applyPreset({name:'中型黑洞', mass:20, spin:0.6, particles:600})">中型黑洞</button>
+                            <button class="preset-chip" onclick="window.blackHoleSimulator?.applyPreset({name:'大型黑洞', mass:50, spin:0.8, particles:1000})">大型黑洞</button>
+                        </div>
                         <div class="control-row">
                             <div class="control-item">
                                 <div class="control-label">
-                                    <span>黑洞质量</span>
+                                    <span>黑洞质量 <span class="help" title="以太阳质量为单位（M☉）。质量越大，引力越强，史瓦西半径越大。">?</span></span>
                                     <span class="control-value" id="massValue">10</span>
                                 </div>
                                 <div class="slider-container">
@@ -322,7 +327,7 @@
                             
                             <div class="control-item">
                                 <div class="control-label">
-                                    <span>自转速度</span>
+                                    <span>自转速度 <span class="help" title="克尔黑洞的无量纲自转参数 a（0–1）。越高表示旋转越快，拖拽效应更明显。">?</span></span>
                                     <span class="control-value" id="spinValue">0.5</span>
                                 </div>
                                 <div class="slider-container">
@@ -340,7 +345,7 @@
                         <div class="control-row">
                             <div class="control-item">
                                 <div class="control-label">
-                                    <span>粒子数量</span>
+                                    <span>粒子数量 <span class="help" title="同时模拟的粒子个数。较大会显著增加渲染开销。">?</span></span>
                                     <span class="control-value" id="particlesValue">500</span>
                                 </div>
                                 <div class="slider-container">
@@ -352,7 +357,7 @@
                             
                             <div class="control-item">
                                 <div class="control-label">
-                                    <span>粒子大小</span>
+                                    <span>粒子大小 <span class="help" title="像素尺寸，影响可见光斑大小与发光效果。">?</span></span>
                                     <span class="control-value" id="particleSizeValue">2.0</span>
                                 </div>
                                 <div class="slider-container">
@@ -366,7 +371,7 @@
                         <div class="control-row">
                             <div class="control-item">
                                 <div class="control-label">
-                                    <span>初始速度</span>
+                                    <span>初始速度 <span class="help" title="粒子发射初速度的标称值（相对光速c）。影响轨道形态。">?</span></span>
                                     <span class="control-value" id="initialVelocityValue">0.8</span>
                                 </div>
                                 <div class="slider-container">
@@ -378,7 +383,7 @@
                             
                             <div class="control-item">
                                 <div class="control-label">
-                                    <span>粒子寿命</span>
+                                    <span>粒子寿命 <span class="help" title="粒子存在的时间，越长轨迹越明显但计算更多。">?</span></span>
                                     <span class="control-value" id="particleLifetimeValue">5.0</span>
                                 </div>
                                 <div class="slider-container">
@@ -396,7 +401,7 @@
                         <div class="control-row">
                             <div class="control-item">
                                 <div class="control-label">
-                                    <span>模拟速度</span>
+                                    <span>模拟速度 <span class="help" title="时间流逝倍率。越高计算与渲染步进更大。">?</span></span>
                                     <span class="control-value" id="speedValue">1.0</span>
                                 </div>
                                 <div class="slider-container">
@@ -408,7 +413,7 @@
                             
                             <div class="control-item">
                                 <div class="control-label">
-                                    <span>时间步长</span>
+                                    <span>时间步长 <span class="help" title="每步积分的时间长度（秒）。较大可提速但精度下降。">?</span></span>
                                     <span class="control-value" id="timeStepValue">0.016</span>
                                 </div>
                                 <div class="slider-container">
@@ -426,7 +431,7 @@
                         <div class="control-row">
                             <div class="control-item">
                                 <div class="control-label">
-                                    <span>渲染质量</span>
+                                    <span>渲染质量 <span class="help" title="低/中/高三档。影响条带段数、阴影与发光强度等。">?</span></span>
                                     <span class="control-value" id="qualityValue">高</span>
                                 </div>
                                 <div class="slider-container">
@@ -438,7 +443,7 @@
                             
                             <div class="control-item">
                                 <div class="control-label">
-                                    <span>背景恒星</span>
+                                    <span>背景恒星 <span class="help" title="背景星点数量。更大更漂亮但更耗性能。">?</span></span>
                                     <span class="control-value" id="starsValue">250</span>
                                 </div>
                                 <div class="slider-container">
@@ -452,7 +457,7 @@
                         <div class="control-row">
                             <div class="control-item">
                                 <div class="control-label">
-                                    <span>轨迹长度</span>
+                                    <span>轨迹长度 <span class="help" title="保留的轨迹点数。更长更平滑但耗时更多。">?</span></span>
                                     <span class="control-value" id="trailLengthValue">50</span>
                                 </div>
                                 <div class="slider-container">
@@ -464,7 +469,7 @@
                             
                             <div class="control-item">
                                 <div class="control-label">
-                                    <span>引力场强度</span>
+                                    <span>引力场强度 <span class="help" title="视觉上的引力场效果强度，仅影响显示。">?</span></span>
                                     <span class="control-value" id="gravityStrengthValue">1.0</span>
                                 </div>
                                 <div class="slider-container">
