@@ -2114,12 +2114,14 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
         grid-template-columns: 1fr 1fr 1fr;
     }
     
-    /* 覆盖旧规则：保持flex，不使用grid列 */
+    /* 保持在父容器内水平居中 */
     .quick-buttons {
-        display: inline-flex;
+        display: flex;
+        justify-content: center;
         gap: 8px;
         align-items: center;
         flex-wrap: wrap;
+        width: 100%;
     }
 }
 
@@ -2152,12 +2154,14 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
         gap: 16px;
     }
     
-    /* 覆盖旧规则：保持flex，不使用grid列 */
+    /* 保持在父容器内水平居中 */
     .quick-buttons {
-        display: inline-flex;
+        display: flex;
+        justify-content: center;
         gap: 12px;
         align-items: center;
         flex-wrap: wrap;
+        width: 100%;
     }
     
     .detail-grid {
@@ -2199,12 +2203,14 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
         gap: 20px;
     }
     
-    /* 覆盖旧规则：保持flex，不使用grid列 */
+    /* 保持在父容器内水平居中 */
     .quick-buttons {
-        display: inline-flex;
+        display: flex;
+        justify-content: center;
         gap: 8px;
         align-items: center;
         flex-wrap: wrap;
+        width: 100%;
     }
     
     .stat-circle {
