@@ -195,8 +195,19 @@ class BlackHoleSimulator {
         }
         
         if (presetBtn) {
-            presetBtn.addEventListener('click', () => {
-                this.showPresetMenu();
+            presetBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const menu = document.getElementById('presetMenu');
+                if (menu) {
+                    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+                }
+            });
+            // 点击页面其他地方关闭菜单
+            document.addEventListener('click', (e) => {
+                const menu = document.getElementById('presetMenu');
+                if (menu && menu.style.display === 'block') {
+                    menu.style.display = 'none';
+                }
             });
         }
         
