@@ -202,8 +202,7 @@ class BlackHoleSimulator {
                     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
                 }
             });
-            // 点击页面其他地方关闭菜单
-            document.addEventListener('click', (e) => {
+            document.addEventListener('click', () => {
                 const menu = document.getElementById('presetMenu');
                 if (menu && menu.style.display === 'block') {
                     menu.style.display = 'none';
