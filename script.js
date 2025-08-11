@@ -1400,7 +1400,7 @@ class BlackHoleSimulator {
     // 居中通知（用于应用预设等场景）
     showNotificationCenter(message) {
         const notification = document.createElement('div');
-        notification.className = 'notification';
+        notification.className = 'notification center';
         notification.textContent = message;
         notification.style.position = 'fixed';
         notification.style.top = '50%';
