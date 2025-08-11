@@ -1324,34 +1324,14 @@ class BlackHoleSimulator {
         this.showNotification('参数已随机化');
     }
     
-    // 显示预设菜单
+    // 预设菜单（禁用弹出，改为无操作，避免底部弹层）
     showPresetMenu() {
-        const presets = [
-            { name: '小型黑洞', mass: 5, spin: 0.3, particles: 300 },
-            { name: '中型黑洞', mass: 20, spin: 0.6, particles: 600 },
-            { name: '大型黑洞', mass: 50, spin: 0.8, particles: 1000 },
-            { name: '超大型黑洞', mass: 100, spin: 0.9, particles: 1500 }
-        ];
-        
-        // 创建预设菜单
-        const menu = document.createElement('div');
-        menu.className = 'preset-menu';
-        menu.innerHTML = `
-            <div class="preset-header">
-                <h4>选择预设方案</h4>
-                <button class="close-btn" onclick="this.parentElement.parentElement.remove()">×</button>
-            </div>
-            <div class="preset-list">
-                ${presets.map(preset => `
-                    <button class="preset-item" onclick="window.blackHoleSimulator.applyPreset(${JSON.stringify(preset)})">
-                        <span class="preset-name">${preset.name}</span>
-                        <span class="preset-desc">质量: ${preset.mass}M☉ | 自转: ${preset.spin}</span>
-                    </button>
-                `).join('')}
-            </div>
-        `;
-        
-        document.body.appendChild(menu);
+        // 如有残留菜单，清理掉
+        const exist = document.querySelector('.preset-menu');
+        if (exist) exist.remove();
+        // 引导：预设已移动到控制台顶部
+        this.showNotification('预设已移动到控制台顶部');
+        return;
     }
     
     // 应用预设
