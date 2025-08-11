@@ -2114,8 +2114,12 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
         grid-template-columns: 1fr 1fr 1fr;
     }
     
+    /* 覆盖旧规则：保持flex，不使用grid列 */
     .quick-buttons {
-        grid-template-columns: 1fr 1fr 1fr;
+        display: inline-flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
     }
 }
 
@@ -2148,9 +2152,12 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
         gap: 16px;
     }
     
+    /* 覆盖旧规则：保持flex，不使用grid列 */
     .quick-buttons {
-        grid-template-columns: 1fr 1fr;
+        display: inline-flex;
         gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
     }
     
     .detail-grid {
@@ -2192,9 +2199,12 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
         gap: 20px;
     }
     
+    /* 覆盖旧规则：保持flex，不使用grid列 */
     .quick-buttons {
-        grid-template-columns: 1fr;
+        display: inline-flex;
         gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
     }
     
     .stat-circle {
@@ -2450,10 +2460,10 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
 }
 
 .quick-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    display: inline-flex;
     gap: 8px;
     align-items: center;
+    flex-wrap: nowrap;
 }
 
 .quick-btn-compact {
