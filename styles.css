@@ -2453,6 +2453,7 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 8px;
+    align-items: center;
 }
 
 .quick-btn-compact {
@@ -2903,3 +2904,6 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
         margin-left: 5px;
     }
 }
+
+.preset-menu button { font-size: 12px; line-height: 1.2; }
+.preset-menu button:hover { background: rgba(0,122,255,0.06); }
