@@ -7,6 +7,7 @@ class BlackHoleSimulator {
         this.gl = null;
         this.webglReady = false;
         this.devicePixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        this.activeDPR = this.devicePixelRatio; // 可动态降级
         this.resizeCanvasToDPR();
         this.isRunning = false;
         this.animationId = null;
@@ -39,6 +40,8 @@ class BlackHoleSimulator {
         this.frameTimeAvgMs = 16.7;
         this.frameCount = 0;
         this.lastRafTs = performance.now();
+        this.lastDrawTs = this.lastRafTs;
+        this.targetFps = 60; // 动态调整（60/30/20）
 
         // 离屏星空画布，降低每帧绘制开销
         this.starCanvas = document.createElement('canvas');
@@ -394,8 +397,10 @@ class BlackHoleSimulator {
             // 背景恒星
             this.drawStars();
             // 绘制引力场效果与吸积盘
-            this.drawGravityField();
-            this.drawAccretionDisk();
+            if (this.shouldDrawHeavy()) {
+                this.drawGravityField();
+                this.drawAccretionDisk();
+            }
             // 更新和绘制粒子
             if (this.isRunning) {
                 this.updateParticles();
@@ -404,7 +409,9 @@ class BlackHoleSimulator {
             // 绘制黑洞
             this.drawBlackHole();
             // 绘制事件视界
-            this.drawEventHorizon();
+            if (this.shouldDrawHeavy()) {
+                this.drawEventHorizon();
+            }
         }
         
         // 自适应质量（基于上一帧耗时）
@@ -413,11 +420,28 @@ class BlackHoleSimulator {
         this.lastRafTs = nowTs;
         this.updateAdaptiveQuality(frameMs);
 
+        // 帧率限制：不足时间片直接跳过绘制，降低主线程压力
+        const timeSinceDraw = nowTs - this.lastDrawTs;
+        const frameBudget = 1000 / this.targetFps;
+        if (timeSinceDraw < frameBudget) {
+            this.animationId = requestAnimationFrame(() => this.render());
+            return;
+        }
+        this.lastDrawTs = nowTs;
+
         // 更新覆盖层信息（每帧更新）
         this.updateOverlayInfo();
         
         // 继续渲染循环
         this.animationId = requestAnimationFrame(() => this.render());
+    }
+
+    shouldDrawHeavy() {
+        if (!this.frameIndex) this.frameIndex = 0;
+        this.frameIndex++;
+        // 高质量每帧绘制， 中质量每2帧， 低质量每3帧
+        const mod = this.dynamicQuality === 3 ? 1 : (this.dynamicQuality === 2 ? 2 : 3);
+        return (this.frameIndex % mod) === 0;
     }
 
     // 根据帧耗时自适应质量，保障交互流畅
@@ -436,6 +460,24 @@ class BlackHoleSimulator {
         // 质量映射
         this.currentSegments = this.dynamicQuality === 3 ? 100 : (this.dynamicQuality === 2 ? 70 : 40);
         this.starfieldRedrawIntervalFrames = this.dynamicQuality === 3 ? 240 : (this.dynamicQuality === 2 ? 360 : 600);
+
+        // 动态目标帧率
+        if (this.frameTimeAvgMs > 28) this.targetFps = 20;
+        else if (this.frameTimeAvgMs > 20) this.targetFps = 30;
+        else this.targetFps = 60;
+
+        // 动态DPR降级（保障交互优先）
+        const desiredDpr = (this.frameTimeAvgMs > 26) ? 1.25 : (this.frameTimeAvgMs > 20 ? 1.5 : this.devicePixelRatio);
+        if (Math.abs((this.activeDPR || 1) - desiredDpr) > 0.05) {
+            this.activeDPR = desiredDpr;
+            // 重新应用DPR到画布
+            const rect = this.canvas.getBoundingClientRect();
+            this.canvas.width = Math.floor(rect.width * this.activeDPR);
+            this.canvas.height = Math.floor(rect.height * this.activeDPR);
+            this.ctx.setTransform(this.activeDPR, 0, 0, this.activeDPR, 0, 0);
+            // 相关资源需重建
+            this.buildStarfieldCanvas();
+        }
 
         // 粒子上限按质量缩放，避免过载
         const scale = this.dynamicQuality === 3 ? 1.0 : (this.dynamicQuality === 2 ? 0.7 : 0.45);

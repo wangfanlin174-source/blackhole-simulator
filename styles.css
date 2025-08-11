@@ -262,7 +262,7 @@ body {
     width: 0;
     height: 1px;
     background: #007aff;
-    transition: all 0.2s ease;
+    transition: width 0.2s ease, transform 0.2s ease;
     transform: translateX(-50%);
 }
 
@@ -304,7 +304,7 @@ body {
     padding: 6px 12px;
     border-radius: 980px;
     background: rgba(0, 122, 255, 0.08);
-    transition: all 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     letter-spacing: 0.01em;
     text-transform: uppercase;
 }
@@ -1141,8 +1141,8 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
 
 /* 控制卡片悬停效果 */
 .control-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.10);
 }
 
 .control-card:hover .control-header h3 {
@@ -1307,7 +1307,7 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
 .apple-btn.primary:hover {
     background: #007aff;
     transform: translateY(-1px);
-    box-shadow: 0 8px 25px rgba(0, 122, 255, 0.3);
+    box-shadow: 0 6px 16px rgba(0, 122, 255, 0.24);
 }
 
 .apple-btn.secondary {
@@ -1320,7 +1320,7 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
     background: #f3f4f6;
     border-color: #d1d5db;
     transform: translateY(-1px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 }
 
 .apple-btn:active {
