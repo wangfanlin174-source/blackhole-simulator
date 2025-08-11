@@ -1378,6 +1378,13 @@ class BlackHoleSimulator {
         const notification = document.createElement('div');
         notification.className = 'notification';
         notification.textContent = message;
+        // 强制定位到顶部居中，避免旧缓存样式导致在底部
+        notification.style.position = 'fixed';
+        notification.style.top = '16px';
+        notification.style.left = '50%';
+        notification.style.transform = 'translateX(-50%)';
+        notification.style.zIndex = '9999';
+        notification.style.pointerEvents = 'none';
         document.body.appendChild(notification);
         
         setTimeout(() => {
