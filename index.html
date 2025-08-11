@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="黑洞模拟器">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#007aff">
+    <meta name="msapplication-TileColor" content="#007aff">
+    <title>黑洞模拟器 - 探索宇宙的奥秘</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <link rel="stylesheet" href="styles.css?v=3.6">
+</head>
+<body class="light">
+    <div class="container">
+        <nav class="topbar apple-nav">
+            <div class="nav-container">
+                <div class="brand">
+                    <span class="logo">🕳️</span>
+                    <span class="brand-text">Black Hole Lab</span>
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#hero">概览</a></li>
+                    <li><a href="#intro">介绍</a></li>
+                    <li><a href="#showcase">演示</a></li>
+                    <li><a href="#controls">控制台</a></li>
+                </ul>
+                <div class="nav-actions">
+                    <a class="nav-link" href="README.md" target="_blank" rel="noopener">使用说明</a>
+                </div>
+            </div>
+        </nav>
+        <header id="hero" class="hero">
+            <h1 class="gradient-text-cosmic gradient-text-animated">黑洞模拟器</h1>
+            <p class="subtitle gradient-text-space">探索宇宙深处的引力与光影。</p>
+            <div class="cta">
+                <button id="ctaStart" class="btn primary">开始模拟</button>
+                <a class="btn ghost" href="#showcase">观看演示</a>
+            </div>
+        </header>
+
+        <section id="intro" class="intro-section">
+            <div class="intro-content">
+                <div class="intro-text">
+                    <div class="eyebrow">探索宇宙</div>
+                    <h2 class="intro-title">黑洞：宇宙的终极奥秘</h2>
+                    <p class="intro-description">黑洞是宇宙中最神秘的天体，它的引力如此强大，连光都无法逃脱。通过这个模拟器，您可以直观地观察粒子在黑洞引力场中的运动轨迹，体验相对论物理的奇妙世界。</p>
+                    
+                    <div class="intro-features">
+                        <div class="feature-item">
+                            <div class="feature-icon">🌌</div>
+                            <div class="feature-content">
+                                <h4>真实物理模拟</h4>
+                                <p>基于爱因斯坦广义相对论，模拟克尔黑洞的引力效应</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">⚡</div>
+                            <div class="feature-content">
+                                <h4>实时交互控制</h4>
+                                <p>动态调节黑洞参数，观察引力场的变化</p>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <div class="feature-icon">🎨</div>
+                            <div class="feature-content">
+                                <h4>精美视觉效果</h4>
+                                <p>粒子轨迹的可视化，展现宇宙的壮丽景象</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="intro-visual">
+                    <div class="visual-container">
+                        <div class="orbit-ring"></div>
+                        <div class="central-point"></div>
+                        <div class="particle-dots">
+                            <div class="particle-dot"></div>
+                            <div class="particle-dot"></div>
+                            <div class="particle-dot"></div>
+                            <div class="particle-dot"></div>
+                            <div class="particle-dot"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 苹果风格分隔区域 -->
+        <section class="divider-section">
+            <div class="divider-content">
+                <div class="divider-visual">
+                    <div class="divider-line"></div>
+                    <div class="divider-icon">🚀</div>
+                    <div class="divider-line"></div>
+                </div>
+                <h2 class="divider-title">准备开始探索</h2>
+                <p class="divider-description">现在您已经了解了黑洞的基本知识，让我们开始真正的模拟体验。在下方，您将看到一个完整的黑洞模拟器，可以实时观察粒子在引力场中的运动。</p>
+                <div class="divider-features">
+                    <div class="divider-feature">
+                        <span class="feature-dot"></span>
+                        <span>实时物理模拟</span>
+                    </div>
+                    <div class="divider-feature">
+                        <span class="feature-dot"></span>
+                        <span>交互式控制</span>
+                    </div>
+                    <div class="divider-feature">
+                        <span class="feature-dot"></span>
+                        <span>科学可视化</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="showcase" class="showcase">
+            <!-- 苹果风格标题区域 -->
+            <div class="showcase-header">
+                <div class="eyebrow">实时模拟</div>
+                <h2 class="showcase-title">黑洞引力场可视化</h2>
+                <p class="showcase-subtitle">观察粒子在克尔黑洞引力场中的运动轨迹，体验相对论物理的奇妙世界。</p>
+            </div>
+            
+            <div class="device-window">
+                <div class="window-bar">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                    <div class="window-title">黑洞模拟器</div>
+                </div>
+                <div class="simulation-area">
+                    <!-- 模拟画布 -->
+                    <canvas id="blackholeCanvas" width="800" height="600"></canvas>
+                    <canvas id="bhWebglCanvas" width="800" height="600" style="display:none"></canvas>
+                    
+                    <!-- 实时信息覆盖层 -->
+                    <div class="simulation-overlay">
+                        <div class="overlay-header">
+                            <div class="simulation-status">
+                                <span class="status-indicator" id="statusIndicator"></span>
+                                <span class="status-text" id="statusText">准备就绪</span>
+                            </div>
+                            <div class="simulation-info">
+                                <div class="info-item">
+                                    <span class="info-label">粒子数量</span>
+                                    <span class="info-value" id="overlayParticleCount">500</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">模拟时间</span>
+                                    <span class="info-value" id="overlaySimTime">0.0s</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="overlay-footer">
+                            <div class="physics-info">
+                                <div class="physics-item">
+                                    <span class="physics-icon">🌌</span>
+                                    <span class="physics-text">克尔黑洞</span>
+                                </div>
+                                <div class="physics-item">
+                                    <span class="physics-icon">⚡</span>
+                                    <span class="physics-text">相对论物理</span>
+                                </div>
+                                <div class="physics-item">
+                                    <span class="physics-icon">🎯</span>
+                                    <span class="physics-text">实时计算</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 移动端使用提示 -->
+            <div class="mobile-tips" style="display: none;">
+                <div class="tip-content">
+                    <h4>📱 移动端操作提示</h4>
+                    <ul>
+                        <li>👆 触摸画布移动黑洞位置</li>
+                        <li>⬆️ 向上滑动开始模拟</li>
+                        <li>⬇️ 向下滑动暂停模拟</li>
+                        <li>🔧 使用下方控制台调节参数</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="controls" class="controls-section">
+            <div class="section-head">
+                <div class="eyebrow">控制台</div>
+                <h2 class="section-title">精确调节</h2>
+                <p class="section-subtitle">微调参数，探索引力与光影的奥秘。</p>
+            </div>
+            
+            <div class="control-grid">
+                <!-- 操作控制区域 -->
+                <div class="control-card action-controls">
+                    <div class="control-header">
+                        <h3>操作控制</h3>
+                        <p>控制模拟的运行状态</p>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button id="startBtn" class="apple-btn primary">
+                            <span class="btn-icon">▶️</span>
+                            <span>开始模拟</span>
+                        </button>
+                        <button id="pauseBtn" class="apple-btn secondary">
+                            <span class="btn-icon">⏸️</span>
+                            <span>暂停</span>
+                        </button>
+                        <button id="resetBtn" class="apple-btn secondary">
+                            <span class="btn-icon">🔄</span>
+                            <span>重置</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 模拟状态指示器 -->
+                    <div class="simulation-status-card">
+                        <h4>模拟状态</h4>
+                        <div class="status-indicators">
+                            <div class="status-item">
+                                <span class="status-dot active"></span>
+                                <span>物理引擎</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-dot active"></span>
+                                <span>渲染系统</span>
+                            </div>
+                            <div class="status-item">
+                                <span class="status-dot active"></span>
+                                <span>粒子管理</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 快捷操作区域 -->
+                    <div class="quick-actions-compact">
+                        <h4>快捷操作</h4>
+                        <div class="quick-buttons">
+                            <button class="quick-btn-compact" id="randomizeBtn">
+                                <span class="btn-icon">🎲</span>
+                                <span>随机</span>
+                            </button>
+                            <button class="quick-btn-compact" id="presetBtn">
+                                <span class="btn-icon">💾</span>
+                                <span>预设</span>
+                            </button>
+                            <button class="quick-btn-compact" id="screenshotBtn">
+                                <span class="btn-icon">📸</span>
+                                <span>截图</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- 高级控制选项 -->
+                    <div class="advanced-controls">
+                        <div class="control-section">
+                            <h4>显示选项</h4>
+                            <div class="toggle-grid">
+                                <div class="toggle-item">
+                                    <div class="toggle-label">
+                                        <span>引力场线</span>
+                                        <span class="toggle-desc">显示引力场强度</span>
+                                    </div>
+                                    <label class="apple-toggle">
+                                        <input type="checkbox" id="showGravityField" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-item">
+                                    <div class="toggle-label">
+                                        <span>粒子轨迹</span>
+                                        <span class="toggle-desc">显示粒子运动轨迹</span>
+                                    </div>
+                                    <label class="apple-toggle">
+                                        <input type="checkbox" id="showTrajectories" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="toggle-item">
+                                    <div class="toggle-label">
+                                        <span>吸积盘</span>
+                                        <span class="toggle-desc">显示吸积盘效果</span>
+                                    </div>
+                                    <label class="apple-toggle">
+                                        <input type="checkbox" id="showAccretionDisk" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 主要控制区域 -->
+                <div class="control-card primary-controls">
+                    <div class="control-header">
+                        <h3>核心参数</h3>
+                        <p>调整黑洞的基本属性</p>
+                    </div>
+                    
+                    <!-- 黑洞基本参数 -->
+                    <div class="parameter-section">
+                        <h4>黑洞属性</h4>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span>黑洞质量</span>
+                                    <span class="control-value" id="massValue">10</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="mass" min="1" max="100" value="10" step="1" class="apple-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="control-unit">太阳质量</div>
+                            </div>
+                            
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span>自转速度</span>
+                                    <span class="control-value" id="spinValue">0.5</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="spin" min="0" max="1" value="0.5" step="0.1" class="apple-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="control-unit">相对论单位</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 粒子系统参数 -->
+                    <div class="parameter-section">
+                        <h4>粒子系统</h4>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span>粒子数量</span>
+                                    <span class="control-value" id="particlesValue">500</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="particles" min="100" max="2000" value="500" step="100" class="apple-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="control-unit">个</div>
+                            </div>
+                            
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span>粒子大小</span>
+                                    <span class="control-value" id="particleSizeValue">2.0</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="particleSize" min="0.5" max="5" value="2" step="0.1" class="apple-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="control-unit">像素</div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-row">
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span>初始速度</span>
+                                    <span class="control-value" id="initialVelocityValue">0.8</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="initialVelocity" min="0.1" max="2" value="0.8" step="0.1" class="apple-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="control-unit">光速</div>
+                            </div>
+                            
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span>粒子寿命</span>
+                                    <span class="control-value" id="particleLifetimeValue">5.0</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="particleLifetime" min="1" max="10" value="5" step="0.5" class="apple-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="control-unit">秒</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 模拟控制参数 -->
+                    <div class="parameter-section">
+                        <h4>模拟控制</h4>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span>模拟速度</span>
+                                    <span class="control-value" id="speedValue">1.0</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="speed" min="0.1" max="3" value="1" step="0.1" class="apple-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="control-unit">倍速</div>
+                            </div>
+                            
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span>时间步长</span>
+                                    <span class="control-value" id="timeStepValue">0.016</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="timeStep" min="0.001" max="0.05" value="0.016" step="0.001" class="apple-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="control-unit">秒</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 渲染设置 -->
+                    <div class="parameter-section">
+                        <h4>渲染设置</h4>
+                        <div class="control-row">
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span>渲染质量</span>
+                                    <span class="control-value" id="qualityValue">高</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="quality" min="1" max="3" value="3" step="1" class="apple-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="control-unit">低/中/高</div>
+                            </div>
+                            
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span>背景恒星</span>
+                                    <span class="control-value" id="starsValue">250</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="stars" min="50" max="500" value="250" step="50" class="apple-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="control-unit">颗</div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-row">
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span>轨迹长度</span>
+                                    <span class="control-value" id="trailLengthValue">50</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="trailLength" min="10" max="100" value="50" step="5" class="apple-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="control-unit">帧</div>
+                            </div>
+                            
+                            <div class="control-item">
+                                <div class="control-label">
+                                    <span>引力场强度</span>
+                                    <span class="control-value" id="gravityStrengthValue">1.0</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="gravityStrength" min="0.1" max="3" value="1" step="0.1" class="apple-slider">
+                                    <div class="slider-track"></div>
+                                </div>
+                                <div class="control-unit">倍率</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 实时信息区域 -->
+                <div class="control-card info-controls">
+                    <div class="control-header">
+                        <h3>实时信息</h3>
+                        <p>黑洞当前状态</p>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">史瓦西半径</div>
+                            <div class="info-value" id="schwarzschildRadius">29.5 km</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">事件视界</div>
+                            <div class="info-value" id="eventHorizon">29.5 km</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">引力强度</div>
+                            <div class="info-value" id="gravityStrength">强</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 物理参数详情 -->
+                    <div class="physics-details">
+                        <h4>物理参数</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">角动量</span>
+                                <span class="detail-value" id="angularMomentum">5.0×10⁴¹</span>
+                                <span class="detail-unit">kg⋅m²/s</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">霍金温度</span>
+                                <span class="detail-value" id="hawkingTemp">6.2×10⁻⁸</span>
+                                <span class="detail-unit">K</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">熵值</span>
+                                <span class="detail-value" id="entropy">1.8×10⁷⁷</span>
+                                <span class="detail-unit">J/K</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 粒子统计 -->
+                    <div class="particle-stats">
+                        <h4>粒子统计</h4>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <div class="stat-circle">
+                                    <span class="stat-number" id="totalParticles">500</span>
+                                    <span class="stat-label">总数</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-circle">
+                                    <span class="stat-number" id="escapedParticles">0</span>
+                                    <span class="stat-label">逃逸</span>
+                                </div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-circle">
+                                    <span class="stat-number" id="capturedParticles">0</span>
+                                    <span class="stat-label">捕获</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 性能监控 -->
+                    <div class="performance-monitor">
+                        <h4>性能监控</h4>
+                        <div class="performance-item">
+                            <span class="perf-label">FPS</span>
+                            <div class="perf-bar">
+                                <div class="perf-fill" id="fpsBar" style="width: 85%"></div>
+                            </div>
+                            <span class="perf-value" id="fpsValue">60</span>
+                        </div>
+                        <div class="performance-item">
+                            <span class="perf-label">内存</span>
+                            <div class="perf-bar">
+                                <div class="perf-fill" id="memoryBar" style="width: 45%"></div>
+                            </div>
+                            <span class="perf-value" id="memoryValue">45%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+
+
+        <footer class="site-footer">
+            <div class="footer-inner">
+                <div class="footer-brand gradient-text-primary gradient-text-animated">Black Hole Lab</div>
+                <ul class="footer-links">
+                    <li><a href="#hero">概览</a></li>
+                    <li><a href="#intro">介绍</a></li>
+                    <li><a href="#showcase">演示</a></li>
+                    <li><a href="#controls">控制台</a></li>
+                    <li><a href="README.md" target="_blank" rel="noopener">使用说明</a></li>
+                </ul>
+                <div class="legal">仅用于教育与演示。© 2025</div>
+            </div>
+            
+            <!-- 个人签名区域 -->
+            <div class="signature-section">
+                <div class="signature-line"></div>
+                <div class="signature-content">
+                    <span class="signature-icon">✨</span>
+                    <span class="signature-text">Airmixunt</span>
+                    <span class="signature-subtitle">Creator & Developer</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js?v=2.0"></script>
+</body>
+</html>
