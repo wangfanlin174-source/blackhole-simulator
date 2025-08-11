@@ -248,15 +248,15 @@
                                 <span class="btn-icon">🎲</span>
                                 <span>随机</span>
                             </button>
-                            <div class="preset-dropdown" style="position:relative;">
-                                <button id="presetBtn" class="quick-btn-compact">
+                            <div class="preset-dropdown" style="position:relative; display:inline-block; vertical-align:middle; margin:0;">
+                                <button id="presetBtn" class="quick-btn-compact" style="display:flex; flex-direction:row; align-items:center;">
                                     <span class="btn-icon">📋</span>
                                     <span>预设</span>
                                 </button>
-                                <div id="presetMenu" class="preset-menu" style="display:none;position:absolute;top:110%;left:0;width:140px;z-index:20;background:rgba(255,255,255,0.98);box-shadow:0 4px 16px rgba(0,0,0,0.08);border-radius:10px;border:1px solid #eee;overflow:hidden;">
-                                    <button style="width:100%;border:none;text-align:left;padding:10px 16px;background:transparent;color:#1d1d1f;display:block;cursor:pointer;" onclick="window.blackHoleSimulator?.applyPreset({name:'小型黑洞', mass:5, spin:0.3, particles:300});document.getElementById('presetMenu').style.display='none'">小型黑洞</button>
-                                    <button style="width:100%;border:none;text-align:left;padding:10px 16px;background:transparent;color:#1d1d1f;display:block;cursor:pointer;" onclick="window.blackHoleSimulator?.applyPreset({name:'中型黑洞', mass:20, spin:0.6, particles:600});document.getElementById('presetMenu').style.display='none'">中型黑洞</button>
-                                    <button style="width:100%;border:none;text-align:left;padding:10px 16px;background:transparent;color:#1d1d1f;display:block;cursor:pointer;" onclick="window.blackHoleSimulator?.applyPreset({name:'大型黑洞', mass:50, spin:0.8, particles:1000});document.getElementById('presetMenu').style.display='none'">大型黑洞</button>
+                                <div id="presetMenu" class="preset-menu" style="display:none; position:absolute; top:calc(100% + 6px); left:0; min-width:120px; z-index:10;">
+                                    <button onclick="window.blackHoleSimulator?.applyPreset({name:'小型黑洞', mass:5, spin:0.3, particles:300})">小型黑洞</button>
+                                    <button onclick="window.blackHoleSimulator?.applyPreset({name:'中型黑洞', mass:20, spin:0.6, particles:600})">中型黑洞</button>
+                                    <button onclick="window.blackHoleSimulator?.applyPreset({name:'大型黑洞', mass:50, spin:0.8, particles:1000})">大型黑洞</button>
                                 </div>
                             </div>
                             <button class="quick-btn-compact" id="screenshotBtn">

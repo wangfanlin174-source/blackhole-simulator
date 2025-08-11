@@ -2917,3 +2917,22 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
 
 .preset-menu button { font-size: 12px; line-height: 1.2; outline: none; border: none; }
 .preset-menu button:hover { background: rgba(0,122,255,0.06); }
+
+.preset-dropdown {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0;
+    position: relative;
+}
+.quick-btn-compact {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.preset-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    min-width: 120px;
+    z-index: 10;
+}
