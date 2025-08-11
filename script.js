@@ -26,6 +26,7 @@ class BlackHoleSimulator {
         // 粒子系统
         this.particles = [];
         this.maxParticles = 500;
+        this.effectiveMaxParticles = this.maxParticles;
         this.simulationSpeed = 1.0;
         
         // 显示选项
@@ -33,10 +34,21 @@ class BlackHoleSimulator {
         this.showTrajectories = true;
         this.showAccretionDisk = true;
         this.renderQuality = 3; // 高质量
+        // 动态质量与帧率监控
+        this.dynamicQuality = 3; // 1=低 2=中 3=高
+        this.frameTimeAvgMs = 16.7;
+        this.frameCount = 0;
+        this.lastRafTs = performance.now();
+
+        // 离屏星空画布，降低每帧绘制开销
+        this.starCanvas = document.createElement('canvas');
+        this.starCtx = this.starCanvas.getContext('2d');
+        this.starfieldRedrawIntervalFrames = 240; // 根据质量自适应调整
         
         // 控制元素
         this.initializeControls();
         this.createParticles();
+        this.buildStarfieldCanvas();
         this.updateBlackHoleInfo();
         this.setupEventListeners();
         
@@ -55,6 +67,7 @@ class BlackHoleSimulator {
             this.blackHole.y = (this.canvas.height / this.devicePixelRatio) / 2;
             this.stars = this.generateStars(250);
             this.createParticles();
+            this.buildStarfieldCanvas();
         });
 
         // 初始化 WebGL
@@ -103,6 +116,7 @@ class BlackHoleSimulator {
         const particlesValue = document.getElementById('particlesValue');
         particlesSlider.addEventListener('input', (e) => {
             this.maxParticles = parseInt(e.target.value);
+            this.effectiveMaxParticles = this.maxParticles; // 用户变更时同步
             particlesValue.textContent = e.target.value;
             this.createParticles();
         });
@@ -195,7 +209,8 @@ class BlackHoleSimulator {
         const canvasWidth = this.canvas.width / this.devicePixelRatio;
         const canvasHeight = this.canvas.height / this.devicePixelRatio;
         
-        for (let i = 0; i < this.maxParticles; i++) {
+        const targetCount = this.effectiveMaxParticles || this.maxParticles;
+        for (let i = 0; i < targetCount; i++) {
             // 在画布边缘随机生成粒子
             let x, y;
             const side = Math.floor(Math.random() * 4); // 0: 上, 1: 右, 2: 下, 3: 左
@@ -316,13 +331,15 @@ class BlackHoleSimulator {
         }
         
         // 如果粒子数量不足，补充新的粒子
-        if (this.particles.length < this.maxParticles * 0.8) {
+        const cap = this.effectiveMaxParticles || this.maxParticles;
+        if (this.particles.length < cap * 0.8) {
             this.addNewParticles();
         }
     }
     
     addNewParticles() {
-        const needed = this.maxParticles - this.particles.length;
+        const cap = this.effectiveMaxParticles || this.maxParticles;
+        const needed = cap - this.particles.length;
         for (let i = 0; i < needed; i++) {
             this.addSingleParticle();
         }
@@ -390,11 +407,44 @@ class BlackHoleSimulator {
             this.drawEventHorizon();
         }
         
+        // 自适应质量（基于上一帧耗时）
+        const nowTs = performance.now();
+        const frameMs = Math.max(0.1, nowTs - this.lastRafTs);
+        this.lastRafTs = nowTs;
+        this.updateAdaptiveQuality(frameMs);
+
         // 更新覆盖层信息（每帧更新）
         this.updateOverlayInfo();
         
         // 继续渲染循环
         this.animationId = requestAnimationFrame(() => this.render());
+    }
+
+    // 根据帧耗时自适应质量，保障交互流畅
+    updateAdaptiveQuality(frameMs) {
+        // 指数滑动平均，降低波动
+        this.frameTimeAvgMs = this.frameTimeAvgMs * 0.9 + frameMs * 0.1;
+        this.frameCount++;
+
+        // 动态调节质量档位
+        if (this.frameTimeAvgMs > 22 && this.dynamicQuality > 1) {
+            this.dynamicQuality -= 1; // 降级
+        } else if (this.frameTimeAvgMs < 15 && this.dynamicQuality < 3) {
+            this.dynamicQuality += 1; // 升级
+        }
+
+        // 质量映射
+        this.currentSegments = this.dynamicQuality === 3 ? 100 : (this.dynamicQuality === 2 ? 70 : 40);
+        this.starfieldRedrawIntervalFrames = this.dynamicQuality === 3 ? 240 : (this.dynamicQuality === 2 ? 360 : 600);
+
+        // 粒子上限按质量缩放，避免过载
+        const scale = this.dynamicQuality === 3 ? 1.0 : (this.dynamicQuality === 2 ? 0.7 : 0.45);
+        this.effectiveMaxParticles = Math.max(100, Math.floor(this.maxParticles * scale));
+
+        // 按一定帧间隔重建一次星空离屏缓存，避免每帧重绘
+        if (this.frameCount % this.starfieldRedrawIntervalFrames === 0) {
+            this.buildStarfieldCanvas();
+        }
     }
 
     initWebGL() {
@@ -549,61 +599,58 @@ class BlackHoleSimulator {
     }
 
     drawStars() {
-        // 绘制星云背景
-        const time = Date.now() * 0.0005;
-        this.ctx.save();
-        
-        // 星云渐变
-        const nebulaGradient = this.ctx.createRadialGradient(
-            this.canvas.width * 0.3, this.canvas.height * 0.2, 0,
-            this.canvas.width * 0.3, this.canvas.height * 0.2, this.canvas.width * 0.8
-        );
-        nebulaGradient.addColorStop(0, 'rgba(100, 50, 150, 0.1)');
-        nebulaGradient.addColorStop(0.5, 'rgba(150, 100, 200, 0.05)');
-        nebulaGradient.addColorStop(1, 'transparent');
-        this.ctx.fillStyle = nebulaGradient;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // 动态星云
-        const nebula2Gradient = this.ctx.createRadialGradient(
-            this.canvas.width * 0.7, this.canvas.height * 0.8, 0,
-            this.canvas.width * 0.7, this.canvas.height * 0.8, this.canvas.width * 0.6
-        );
-        nebula2Gradient.addColorStop(0, `rgba(200, 100, 50, ${0.08 + Math.sin(time) * 0.02})`);
-        nebula2Gradient.addColorStop(1, 'transparent');
-        this.ctx.fillStyle = nebula2Gradient;
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // 绘制恒星
-        this.stars.forEach(s => {
-            this.ctx.save();
-            this.ctx.globalAlpha = s.a;
-            
-            // 恒星光芒
+        // 直接绘制离屏缓存，避免每帧生成大量渐变与路径
+        this.ctx.drawImage(this.starCanvas, 0, 0);
+    }
+
+    // 构建星空与星云的离屏缓存
+    buildStarfieldCanvas() {
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        if (w <= 0 || h <= 0) return;
+        this.starCanvas.width = w;
+        this.starCanvas.height = h;
+        const ctx = this.starCtx;
+        ctx.clearRect(0, 0, w, h);
+
+        // 背景渐变（静态）
+        const grad1 = ctx.createRadialGradient(w * 0.3, h * 0.2, 0, w * 0.3, h * 0.2, w * 0.8);
+        grad1.addColorStop(0, 'rgba(100, 50, 150, 0.10)');
+        grad1.addColorStop(0.5, 'rgba(150, 100, 200, 0.05)');
+        grad1.addColorStop(1, 'transparent');
+        ctx.fillStyle = grad1;
+        ctx.fillRect(0, 0, w, h);
+
+        const grad2 = ctx.createRadialGradient(w * 0.7, h * 0.8, 0, w * 0.7, h * 0.8, w * 0.6);
+        grad2.addColorStop(0, 'rgba(200, 100, 50, 0.08)');
+        grad2.addColorStop(1, 'transparent');
+        ctx.fillStyle = grad2;
+        ctx.fillRect(0, 0, w, h);
+
+        // 恒星（数量按质量档位缩放）
+        const scale = this.dynamicQuality === 3 ? 1.0 : (this.dynamicQuality === 2 ? 0.7 : 0.5);
+        const starsToDraw = Math.floor(this.stars.length * scale);
+        for (let i = 0; i < starsToDraw; i++) {
+            const s = this.stars[i];
+            ctx.save();
+            ctx.globalAlpha = s.a;
+            const gx = s.x / this.devicePixelRatio;
+            const gy = s.y / this.devicePixelRatio;
             const glowRadius = s.r * 3;
-            const glowGradient = this.ctx.createRadialGradient(
-                s.x / this.devicePixelRatio, s.y / this.devicePixelRatio, 0,
-                s.x / this.devicePixelRatio, s.y / this.devicePixelRatio, glowRadius
-            );
-            glowGradient.addColorStop(0, `rgba(255, 255, 255, ${s.a * 0.8})`);
-            glowGradient.addColorStop(0.5, `rgba(255, 255, 200, ${s.a * 0.4})`);
-            glowGradient.addColorStop(1, 'transparent');
-            
-            this.ctx.fillStyle = glowGradient;
-            this.ctx.beginPath();
-            this.ctx.arc(s.x / this.devicePixelRatio, s.y / this.devicePixelRatio, glowRadius, 0, Math.PI * 2);
-            this.ctx.fill();
-            
-            // 恒星核心
-            this.ctx.fillStyle = '#ffffff';
-            this.ctx.beginPath();
-            this.ctx.arc(s.x / this.devicePixelRatio, s.y / this.devicePixelRatio, s.r, 0, Math.PI * 2);
-            this.ctx.fill();
-            
-            this.ctx.restore();
-        });
-        
-        this.ctx.restore();
+            const glow = ctx.createRadialGradient(gx, gy, 0, gx, gy, glowRadius);
+            glow.addColorStop(0, `rgba(255,255,255,${s.a * 0.8})`);
+            glow.addColorStop(0.5, `rgba(255,255,200,${s.a * 0.4})`);
+            glow.addColorStop(1, 'transparent');
+            ctx.fillStyle = glow;
+            ctx.beginPath();
+            ctx.arc(gx, gy, glowRadius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(gx, gy, s.r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
     }
 
     drawAccretionDisk() {
@@ -638,7 +685,7 @@ class BlackHoleSimulator {
         }
 
         // 动态多普勒增亮条带
-        const segments = 120;
+        const segments = this.currentSegments || 80;
         for (let i = 0; i < segments; i++) {
             const t = i / segments * Math.PI * 2;
             const brightness = 0.6 + 0.4 * Math.cos(t - time * this.blackHole.spin);
@@ -646,9 +693,9 @@ class BlackHoleSimulator {
             
             // 主条带
             ctx.strokeStyle = `rgba(255,200,150,${alpha})`;
-            ctx.lineWidth = 3;
-            ctx.shadowColor = `rgba(255,200,150,${alpha * 0.5})`;
-            ctx.shadowBlur = 5;
+            ctx.lineWidth = this.dynamicQuality >= 3 ? 3 : (this.dynamicQuality === 2 ? 2 : 1);
+            ctx.shadowColor = `rgba(255,200,150,${alpha * 0.4})`;
+            ctx.shadowBlur = this.dynamicQuality >= 3 ? 5 : (this.dynamicQuality === 2 ? 3 : 1);
             ctx.beginPath();
             const rx = outer * Math.cos(t);
             const ry = outer * 0.35 * Math.sin(t);
@@ -659,7 +706,7 @@ class BlackHoleSimulator {
             // 发光条带
             ctx.shadowBlur = 0;
             ctx.strokeStyle = `rgba(255,255,200,${alpha * 0.6})`;
-            ctx.lineWidth = 1;
+            ctx.lineWidth = this.dynamicQuality === 1 ? 0.5 : 1;
             ctx.stroke();
         }
 
@@ -690,14 +737,16 @@ class BlackHoleSimulator {
             if (particle.life > 0) {
                 this.ctx.save();
                 this.ctx.globalAlpha = particle.life / particle.maxLife;
+                const lowQ = this.dynamicQuality === 1;
+                const midQ = this.dynamicQuality === 2;
                 
                 // 绘制粒子轨迹（发光效果）
-                if (particle.trail && particle.trail.length > 1) {
+                if (!lowQ && particle.trail && particle.trail.length > 1) {
                     // 轨迹发光
                     this.ctx.shadowColor = particle.color;
-                    this.ctx.shadowBlur = 8;
+                    this.ctx.shadowBlur = midQ ? 4 : 8;
                     this.ctx.strokeStyle = particle.color;
-                    this.ctx.lineWidth = 3;
+                    this.ctx.lineWidth = midQ ? 2 : 3;
                     this.ctx.beginPath();
                     this.ctx.moveTo(particle.trail[0].x, particle.trail[0].y);
                     for (let i = 1; i < particle.trail.length; i++) {
@@ -707,35 +756,34 @@ class BlackHoleSimulator {
                     
                     // 轨迹渐变
                     this.ctx.shadowBlur = 0;
-                    this.ctx.lineWidth = 1;
+                    this.ctx.lineWidth = midQ ? 1 : 1;
                     this.ctx.strokeStyle = '#ffffff';
                     this.ctx.stroke();
                 }
                 
-                // 粒子发光效果
-                this.ctx.shadowColor = particle.color;
-                this.ctx.shadowBlur = 15;
-                
-                // 外发光
-                const glowRadius = particle.size * 2;
-                const glowGradient = this.ctx.createRadialGradient(
-                    particle.x, particle.y, 0,
-                    particle.x, particle.y, glowRadius
-                );
-                glowGradient.addColorStop(0, particle.color);
-                glowGradient.addColorStop(0.5, particle.color + '80');
-                glowGradient.addColorStop(1, 'transparent');
-                
-                this.ctx.fillStyle = glowGradient;
-                this.ctx.beginPath();
-                this.ctx.arc(particle.x, particle.y, glowRadius, 0, Math.PI * 2);
-                this.ctx.fill();
+                // 粒子发光效果（按质量档位简化）
+                if (!lowQ) {
+                    this.ctx.shadowColor = particle.color;
+                    this.ctx.shadowBlur = midQ ? 8 : 15;
+                    const glowRadius = particle.size * (midQ ? 1.6 : 2.0);
+                    const glowGradient = this.ctx.createRadialGradient(
+                        particle.x, particle.y, 0,
+                        particle.x, particle.y, glowRadius
+                    );
+                    glowGradient.addColorStop(0, particle.color);
+                    glowGradient.addColorStop(0.6, particle.color + '80');
+                    glowGradient.addColorStop(1, 'transparent');
+                    this.ctx.fillStyle = glowGradient;
+                    this.ctx.beginPath();
+                    this.ctx.arc(particle.x, particle.y, glowRadius, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
                 
                 // 粒子核心
                 this.ctx.shadowBlur = 0;
                 this.ctx.fillStyle = '#ffffff';
                 this.ctx.beginPath();
-                this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                this.ctx.arc(particle.x, particle.y, lowQ ? Math.max(0.6, particle.size * 0.8) : particle.size, 0, Math.PI * 2);
                 this.ctx.fill();
                 
                 this.ctx.restore();
@@ -747,7 +795,7 @@ class BlackHoleSimulator {
         const time = Date.now() * 0.001;
         
         // 黑洞核心（多层引力透镜暗影）
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < (this.dynamicQuality >= 3 ? 3 : (this.dynamicQuality === 2 ? 2 : 1)); i++) {
             const radius = this.blackHole.radius * (0.8 + i * 0.2);
             const gradient = this.ctx.createRadialGradient(
                 this.blackHole.x, this.blackHole.y, 0,
@@ -767,9 +815,9 @@ class BlackHoleSimulator {
         // 动态引力透镜发光边缘
         const edgeRadius = this.blackHole.radius + 3 + Math.sin(time * 3) * 2;
         this.ctx.strokeStyle = 'rgba(255, 200, 150, 0.5)';
-        this.ctx.lineWidth = 3;
+        this.ctx.lineWidth = this.dynamicQuality === 1 ? 2 : 3;
         this.ctx.shadowColor = 'rgba(255, 200, 150, 0.8)';
-        this.ctx.shadowBlur = 10;
+        this.ctx.shadowBlur = this.dynamicQuality >= 3 ? 10 : (this.dynamicQuality === 2 ? 6 : 2);
         this.ctx.beginPath();
         this.ctx.arc(this.blackHole.x, this.blackHole.y, edgeRadius, 0, Math.PI * 2);
         this.ctx.stroke();
@@ -797,7 +845,7 @@ class BlackHoleSimulator {
         const time = Date.now() * 0.001;
         
         // 多层事件视界
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < (this.dynamicQuality >= 2 ? 2 : 1); i++) {
             const radius = this.blackHole.radius * (2 + i * 0.5);
             const alpha = 0.4 - i * 0.1;
             const dashLength = 8 - i * 2;
@@ -813,11 +861,11 @@ class BlackHoleSimulator {
         
         // 动态事件视界警告线
         const warningRadius = this.blackHole.radius * 2.5;
-        const warningAlpha = 0.6 + Math.sin(time * 2) * 0.2;
+        const warningAlpha = 0.5 + Math.sin(time * 2) * 0.2;
         this.ctx.strokeStyle = `rgba(255, 50, 50, ${warningAlpha})`;
-        this.ctx.lineWidth = 3;
+        this.ctx.lineWidth = this.dynamicQuality === 1 ? 2 : 3;
         this.ctx.shadowColor = 'rgba(255, 50, 50, 0.5)';
-        this.ctx.shadowBlur = 8;
+        this.ctx.shadowBlur = this.dynamicQuality >= 3 ? 8 : (this.dynamicQuality === 2 ? 4 : 1);
         this.ctx.beginPath();
         this.ctx.arc(this.blackHole.x, this.blackHole.y, warningRadius, 0, Math.PI * 2);
         this.ctx.stroke();
