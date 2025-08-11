@@ -195,19 +195,22 @@ class BlackHoleSimulator {
         }
         
         if (presetBtn) {
+            const presetMenuEl = document.getElementById('presetMenu');
+            const toggleMenu = (open) => {
+                if (!presetMenuEl) return;
+                presetMenuEl.style.display = open ? 'block' : 'none';
+            };
             presetBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                const menu = document.getElementById('presetMenu');
-                if (menu) {
-                    menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-                }
+                const isOpen = presetMenuEl && presetMenuEl.style.display === 'block';
+                toggleMenu(!isOpen);
             });
-            document.addEventListener('click', () => {
-                const menu = document.getElementById('presetMenu');
-                if (menu && menu.style.display === 'block') {
-                    menu.style.display = 'none';
-                }
-            });
+            // 阻止在菜单内点击冒泡
+            if (presetMenuEl) {
+                presetMenuEl.addEventListener('click', (e) => e.stopPropagation());
+            }
+            // 点击空白关闭
+            document.addEventListener('click', () => toggleMenu(false));
         }
         
         if (screenshotBtn) {
