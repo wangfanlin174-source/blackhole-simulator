@@ -972,15 +972,20 @@ class BlackHoleSimulator {
     }
     
     resetSimulation() {
+        console.log('重置函数被调用');
         this.isRunning = false;
         this.simulationTime = 0;
         document.getElementById('startBtn').textContent = '开始模拟';
         document.getElementById('startBtn').disabled = false;
         document.getElementById('pauseBtn').disabled = true;
         
+        console.log('重置前黑洞参数:', this.blackHole.mass, this.blackHole.spin);
+        
         // 恢复黑洞参数到默认值
         this.blackHole.mass = 10;
         this.blackHole.spin = 0.5;
+        
+        console.log('重置后黑洞参数:', this.blackHole.mass, this.blackHole.spin);
         
         // 恢复粒子数量到默认值
         this.maxParticles = 500;
@@ -1009,29 +1014,49 @@ class BlackHoleSimulator {
         const qualitySlider = document.getElementById('quality');
         const starsSlider = document.getElementById('stars');
         
+        console.log('开始更新UI控件...');
+        
         if (massSlider) {
             massSlider.value = 10;
             document.getElementById('massValue').textContent = '10';
+            console.log('质量滑块已更新为:', massSlider.value);
+        } else {
+            console.log('质量滑块未找到');
         }
         if (spinSlider) {
             spinSlider.value = 0.5;
             document.getElementById('spinValue').textContent = '0.5';
+            console.log('自转滑块已更新为:', spinSlider.value);
+        } else {
+            console.log('自转滑块未找到');
         }
         if (particlesSlider) {
             particlesSlider.value = 500;
             document.getElementById('particlesValue').textContent = '500';
+            console.log('粒子滑块已更新为:', particlesSlider.value);
+        } else {
+            console.log('粒子滑块未找到');
         }
         if (speedSlider) {
             speedSlider.value = 1.0;
             document.getElementById('speedValue').textContent = '1.0';
+            console.log('速度滑块已更新为:', speedSlider.value);
+        } else {
+            console.log('速度滑块未找到');
         }
         if (qualitySlider) {
             qualitySlider.value = 3;
             document.getElementById('qualityValue').textContent = '高';
+            console.log('质量滑块已更新为:', qualitySlider.value);
+        } else {
+            console.log('质量滑块未找到');
         }
         if (starsSlider) {
             starsSlider.value = 250;
             document.getElementById('starsValue').textContent = '250';
+            console.log('恒星滑块已更新为:', starsSlider.value);
+        } else {
+            console.log('恒星滑块未找到');
         }
         
         // 恢复显示选项复选框
@@ -1050,6 +1075,8 @@ class BlackHoleSimulator {
         
         // 更新覆盖层状态
         this.updateOverlayInfo();
+        
+        console.log('重置完成');
         
         // 显示重置提示
         this.showNotification('模拟已重置到默认参数');
