@@ -2921,8 +2921,20 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
     }
 }
 
-.preset-menu button { font-size: 12px; line-height: 1.2; outline: none; border: none; }
-.preset-menu button:hover { background: rgba(0,122,255,0.06); }
+.preset-menu button { 
+    font-size: 12px; 
+    line-height: 1.2; 
+    outline: none; 
+    border: none; 
+    background: transparent;
+    color: #333;
+    transition: all 0.2s ease;
+}
+
+.preset-menu button:hover { 
+    background: rgba(0,122,255,0.08); 
+    color: #007AFF;
+}
 
 .preset-dropdown {
     display: inline-block;
@@ -2930,17 +2942,74 @@ header.hero .subtitle { color: var(--muted); margin-top: 8px; font-size: 18px; }
     margin: 0;
     position: relative;
 }
+
 .quick-btn-compact {
     display: flex;
     flex-direction: row;
     align-items: center;
 }
+
 .preset-menu {
     position: absolute;
-    top: calc(100% + 6px);
+    top: calc(100% + 8px);
     left: 0;
-    min-width: 120px;
-    z-index: 10;
+    min-width: 140px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    box-shadow: 
+        0 4px 20px rgba(0, 0, 0, 0.08),
+        0 8px 32px rgba(0, 0, 0, 0.12);
+    padding: 8px 0;
+    z-index: 1000;
+    animation: menuFadeIn 0.2s ease-out;
+}
+
+.preset-menu button {
+    display: block;
+    width: 100%;
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 400;
+    color: #1d1d1f;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border-radius: 0;
+}
+
+.preset-menu button:first-child {
+    border-radius: 12px 12px 0 0;
+}
+
+.preset-menu button:last-child {
+    border-radius: 0 0 12px 12px;
+}
+
+.preset-menu button:hover {
+    background: rgba(0, 122, 255, 0.08);
+    color: #007AFF;
+}
+
+.preset-menu button:active {
+    background: rgba(0, 122, 255, 0.12);
+    transform: scale(0.98);
+}
+
+@keyframes menuFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 @media (max-width: 1024px) {
