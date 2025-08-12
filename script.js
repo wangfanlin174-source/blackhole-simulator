@@ -30,6 +30,14 @@ class BlackHoleSimulator {
         this.effectiveMaxParticles = this.maxParticles;
         this.simulationSpeed = 1.0;
         
+        // 新增粒子参数
+        this.particleSize = 2.0;
+        this.initialVelocity = 0.8;
+        this.particleLifetime = 5.0;
+        this.timeStep = 0.016;
+        this.trailLength = 50;
+        this.gravityStrength = 1.0;
+        
         // 显示选项
         this.showGravityField = true;
         this.showTrajectories = true;
@@ -131,6 +139,78 @@ class BlackHoleSimulator {
             this.simulationSpeed = parseFloat(e.target.value);
             speedValue.textContent = parseFloat(e.target.value).toFixed(1);
         });
+        
+        // 粒子大小控制
+        const particleSizeSlider = document.getElementById('particleSize');
+        const particleSizeValue = document.getElementById('particleSizeValue');
+        if (particleSizeSlider && particleSizeValue) {
+            particleSizeSlider.addEventListener('input', (e) => {
+                const size = parseFloat(e.target.value);
+                particleSizeValue.textContent = size.toFixed(1);
+                // 更新粒子大小参数
+                this.particleSize = size;
+            });
+        }
+        
+        // 初始速度控制
+        const initialVelocitySlider = document.getElementById('initialVelocity');
+        const initialVelocityValue = document.getElementById('initialVelocityValue');
+        if (initialVelocitySlider && initialVelocityValue) {
+            initialVelocitySlider.addEventListener('input', (e) => {
+                const velocity = parseFloat(e.target.value);
+                initialVelocityValue.textContent = velocity.toFixed(1);
+                // 更新初始速度参数
+                this.initialVelocity = velocity;
+            });
+        }
+        
+        // 粒子寿命控制
+        const particleLifetimeSlider = document.getElementById('particleLifetime');
+        const particleLifetimeValue = document.getElementById('particleLifetimeValue');
+        if (particleLifetimeSlider && particleLifetimeValue) {
+            particleLifetimeSlider.addEventListener('input', (e) => {
+                const lifetime = parseFloat(e.target.value);
+                particleLifetimeValue.textContent = lifetime.toFixed(1);
+                // 更新粒子寿命参数
+                this.particleLifetime = lifetime;
+            });
+        }
+        
+        // 时间步长控制
+        const timeStepSlider = document.getElementById('timeStep');
+        const timeStepValue = document.getElementById('timeStepValue');
+        if (timeStepSlider && timeStepValue) {
+            timeStepSlider.addEventListener('input', (e) => {
+                const timeStep = parseFloat(e.target.value);
+                timeStepValue.textContent = timeStep.toFixed(3);
+                // 更新时间步长参数
+                this.timeStep = timeStep;
+            });
+        }
+        
+        // 轨迹长度控制
+        const trailLengthSlider = document.getElementById('trailLength');
+        const trailLengthValue = document.getElementById('trailLengthValue');
+        if (trailLengthSlider && trailLengthValue) {
+            trailLengthSlider.addEventListener('input', (e) => {
+                const trailLength = parseInt(e.target.value);
+                trailLengthValue.textContent = trailLength;
+                // 更新轨迹长度参数
+                this.trailLength = trailLength;
+            });
+        }
+        
+        // 引力场强度控制
+        const gravityStrengthSlider = document.getElementById('gravityStrength');
+        const gravityStrengthValue = document.getElementById('gravityStrengthValue');
+        if (gravityStrengthSlider && gravityStrengthValue) {
+            gravityStrengthSlider.addEventListener('input', (e) => {
+                const strength = parseFloat(e.target.value);
+                gravityStrengthValue.textContent = strength.toFixed(1);
+                // 更新引力场强度参数
+                this.gravityStrength = strength;
+            });
+        }
         
         // 按钮控制
         document.getElementById('startBtn').addEventListener('click', () => this.startSimulation());
@@ -254,7 +334,7 @@ class BlackHoleSimulator {
             const dx = this.blackHole.x - x;
             const dy = this.blackHole.y - y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-            const speed = 0.3 + Math.random() * 1.0;
+            const speed = (this.initialVelocity || 0.8) + Math.random() * 0.5; // 使用参数或默认值
             
             this.particles.push({
                 x: x,
@@ -262,10 +342,11 @@ class BlackHoleSimulator {
                 vx: (dx / distance) * speed,
                 vy: (dy / distance) * speed,
                 mass: 0.1 + Math.random() * 0.3,
-                size: 0.8 + Math.random() * 1.6,
+                size: this.particleSize || (1 + Math.random() * 2), // 使用参数或默认随机值
                 color: this.getRandomParticleColor(),
                 life: 1.0,
-                maxLife: 1.0
+                maxLife: 1.0,
+                trail: [{x: x, y: y}] // 添加轨迹数组
             });
         }
     }
@@ -326,13 +407,24 @@ class BlackHoleSimulator {
             }
             
             // 更新速度和位置
-            particle.vx += ax * this.simulationSpeed;
-            particle.vy += ay * this.simulationSpeed;
-            particle.x += particle.vx * this.simulationSpeed;
-            particle.y += particle.vy * this.simulationSpeed;
+            const dt = this.timeStep || 0.016; // 使用时间步长参数
+            particle.vx += ax * dt * this.simulationSpeed;
+            particle.vy += ay * dt * this.simulationSpeed;
+            particle.x += particle.vx * dt * this.simulationSpeed;
+            particle.y += particle.vy * dt * this.simulationSpeed;
+            
+            // 更新轨迹
+            if (particle.trail) {
+                particle.trail.push({x: particle.x, y: particle.y});
+                // 限制轨迹长度
+                const maxTrailLength = this.trailLength || 50;
+                if (particle.trail.length > maxTrailLength) {
+                    particle.trail.shift(); // 移除最旧的轨迹点
+                }
+            }
             
             // 粒子生命周期管理
-            particle.life -= 0.0008 * this.simulationSpeed;
+            particle.life -= (0.0008 / (this.particleLifetime || 5.0)) * this.simulationSpeed;
             if (particle.life <= 0) {
                 this.particles.splice(i, 1);
             }
@@ -377,7 +469,7 @@ class BlackHoleSimulator {
         const dx = this.blackHole.x - x;
         const dy = this.blackHole.y - y;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const speed = 0.5 + Math.random() * 1.5;
+        const speed = (this.initialVelocity || 0.8) + Math.random() * 0.5; // 使用参数或默认值
         
         this.particles.push({
             x: x,
@@ -606,13 +698,14 @@ class BlackHoleSimulator {
     
     drawGravityField() {
         // 多层引力场效果
+        const strength = this.gravityStrength || 1.0; // 使用引力场强度参数
         for (let i = 0; i < 3; i++) {
             const radius = this.blackHole.radius * (2 + i * 1.5);
             const gradient = this.ctx.createRadialGradient(
                 this.blackHole.x, this.blackHole.y, 0,
                 this.blackHole.x, this.blackHole.y, radius
             );
-            const alpha = 0.06 - i * 0.02;
+            const alpha = (0.06 - i * 0.02) * strength; // 应用强度参数
             const hue = 15 + i * 20; // 从橙红到黄
             gradient.addColorStop(0, `hsla(${hue}, 100%, 70%, ${alpha})`);
             gradient.addColorStop(0.4, `hsla(${hue}, 100%, 60%, ${alpha * 0.6})`);
@@ -626,7 +719,7 @@ class BlackHoleSimulator {
         const time = Date.now() * 0.001;
         for (let i = 0; i < 2; i++) {
             const waveRadius = this.blackHole.radius * 3 + Math.sin(time * 2 + i * Math.PI) * 20;
-            this.ctx.strokeStyle = `rgba(255, 150, 100, ${0.3 - i * 0.1})`;
+            this.ctx.strokeStyle = `rgba(255, 150, 100, ${(0.3 - i * 0.1) * strength})`; // 应用强度参数
             this.ctx.lineWidth = 2;
             this.ctx.beginPath();
             this.ctx.arc(this.blackHole.x, this.blackHole.y, waveRadius, 0, Math.PI * 2);
@@ -976,6 +1069,14 @@ class BlackHoleSimulator {
         // 恢复模拟速度到默认值
         this.simulationSpeed = 1.0;
         
+        // 恢复新增参数到默认值
+        this.particleSize = 2.0;
+        this.initialVelocity = 0.8;
+        this.particleLifetime = 5.0;
+        this.timeStep = 0.016;
+        this.trailLength = 50;
+        this.gravityStrength = 1.0;
+        
         // 恢复渲染质量到默认值
         this.renderQuality = 3;
         this.dynamicQuality = 3;
@@ -1039,6 +1140,45 @@ class BlackHoleSimulator {
             console.log('恒星滑块已更新为:', starsSlider.value);
         } else {
             console.log('恒星滑块未找到');
+        }
+        
+        // 重置新增控制器
+        const particleSizeSlider = document.getElementById('particleSize');
+        const initialVelocitySlider = document.getElementById('initialVelocity');
+        const particleLifetimeSlider = document.getElementById('particleLifetime');
+        const timeStepSlider = document.getElementById('timeStep');
+        const trailLengthSlider = document.getElementById('trailLength');
+        const gravityStrengthSlider = document.getElementById('gravityStrength');
+        
+        if (particleSizeSlider) {
+            particleSizeSlider.value = 2.0;
+            document.getElementById('particleSizeValue').textContent = '2.0';
+            console.log('粒子大小滑块已更新为:', particleSizeSlider.value);
+        }
+        if (initialVelocitySlider) {
+            initialVelocitySlider.value = 0.8;
+            document.getElementById('initialVelocityValue').textContent = '0.8';
+            console.log('初始速度滑块已更新为:', initialVelocitySlider.value);
+        }
+        if (particleLifetimeSlider) {
+            particleLifetimeSlider.value = 5.0;
+            document.getElementById('particleLifetimeValue').textContent = '5.0';
+            console.log('粒子寿命滑块已更新为:', particleLifetimeSlider.value);
+        }
+        if (timeStepSlider) {
+            timeStepSlider.value = 0.016;
+            document.getElementById('timeStepValue').textContent = '0.016';
+            console.log('时间步长滑块已更新为:', timeStepSlider.value);
+        }
+        if (trailLengthSlider) {
+            trailLengthSlider.value = 50;
+            document.getElementById('trailLengthValue').textContent = '50';
+            console.log('轨迹长度滑块已更新为:', trailLengthSlider.value);
+        }
+        if (gravityStrengthSlider) {
+            gravityStrengthSlider.value = 1.0;
+            document.getElementById('gravityStrengthValue').textContent = '1.0';
+            console.log('引力场强度滑块已更新为:', gravityStrengthSlider.value);
         }
         
         // 恢复显示选项复选框
@@ -1415,6 +1555,37 @@ class BlackHoleSimulator {
         document.getElementById('particles').value = randomParticles;
         document.getElementById('particlesValue').textContent = randomParticles;
         this.maxParticles = randomParticles;
+        
+        // 随机化新增参数
+        const randomParticleSize = Math.round((Math.random() * 4.5 + 0.5) * 10) / 10;
+        document.getElementById('particleSize').value = randomParticleSize;
+        document.getElementById('particleSizeValue').textContent = randomParticleSize.toFixed(1);
+        this.particleSize = randomParticleSize;
+        
+        const randomInitialVelocity = Math.round((Math.random() * 1.9 + 0.1) * 10) / 10;
+        document.getElementById('initialVelocity').value = randomInitialVelocity;
+        document.getElementById('initialVelocityValue').textContent = randomInitialVelocity.toFixed(1);
+        this.initialVelocity = randomInitialVelocity;
+        
+        const randomParticleLifetime = Math.round((Math.random() * 9 + 1) * 10) / 10;
+        document.getElementById('particleLifetime').value = randomParticleLifetime;
+        document.getElementById('particleLifetimeValue').textContent = randomParticleLifetime.toFixed(1);
+        this.particleLifetime = randomParticleLifetime;
+        
+        const randomTimeStep = Math.round((Math.random() * 0.049 + 0.001) * 1000) / 1000;
+        document.getElementById('timeStep').value = randomTimeStep;
+        document.getElementById('timeStepValue').textContent = randomTimeStep.toFixed(3);
+        this.timeStep = randomTimeStep;
+        
+        const randomTrailLength = Math.floor(Math.random() * 91 + 10);
+        document.getElementById('trailLength').value = randomTrailLength;
+        document.getElementById('trailLengthValue').textContent = randomTrailLength;
+        this.trailLength = randomTrailLength;
+        
+        const randomGravityStrength = Math.round((Math.random() * 2.9 + 0.1) * 10) / 10;
+        document.getElementById('gravityStrength').value = randomGravityStrength;
+        document.getElementById('gravityStrengthValue').textContent = randomGravityStrength.toFixed(1);
+        this.gravityStrength = randomGravityStrength;
         
         // 更新显示
         this.updateBlackHoleInfo();
