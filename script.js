@@ -1044,7 +1044,13 @@ class BlackHoleSimulator {
         
         // 更新粒子数量
         if (this.overlayElements.particleCount) {
-            this.overlayElements.particleCount.textContent = this.particles.length;
+            this.overlayElements.particleCount.textContent = `${this.particles.length}/${this.maxParticles}`;
+        }
+        
+        // 同时更新HTML中的粒子统计
+        const totalParticlesEl = document.getElementById('totalParticles');
+        if (totalParticlesEl) {
+            totalParticlesEl.textContent = `${this.particles.length}/${this.maxParticles}`;
         }
         
         // 更新模拟时间
@@ -1477,12 +1483,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 取消标题动画，保持稳态排版
 });
-
-// 添加粒子数量显示
-setInterval(() => {
-    if (window.blackHoleSimulator) {
-        const particleCount = window.blackHoleSimulator.particles.length;
-        const maxParticles = window.blackHoleSimulator.maxParticles;
-        document.getElementById('particlesValue').textContent = `${particleCount}/${maxParticles}`;
-    }
-}, 1000);
