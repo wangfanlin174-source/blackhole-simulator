@@ -35,13 +35,13 @@ class BlackHoleSimulator {
         this.showTrajectories = true;
         this.showAccretionDisk = true;
         this.renderQuality = 3; // 高质量
-        // 动态质量与帧率监控
-        this.dynamicQuality = 3; // 1=低 2=中 3=高
+        // 固定高质量渲染，避免频闪
+        this.dynamicQuality = 3; // 固定为高质量，不再动态调整
         this.frameTimeAvgMs = 16.7;
         this.frameCount = 0;
         this.lastRafTs = performance.now();
         this.lastDrawTs = this.lastRafTs;
-        this.targetFps = 60; // 动态调整（60/30/20）
+        this.targetFps = 60; // 固定60fps，不再动态调整
 
         // 离屏星空画布，降低每帧绘制开销
         this.starCanvas = document.createElement('canvas');
@@ -452,51 +452,32 @@ class BlackHoleSimulator {
     shouldDrawHeavy() {
         if (!this.frameIndex) this.frameIndex = 0;
         this.frameIndex++;
-        // 高质量每帧绘制， 中质量每2帧， 低质量每3帧
-        const mod = this.dynamicQuality === 3 ? 1 : (this.dynamicQuality === 2 ? 2 : 3);
-        return (this.frameIndex % mod) === 0;
+        // 固定高质量渲染，每帧都绘制所有效果，避免频闪
+        return true; // 始终返回true，确保每帧都绘制
     }
 
     // 根据帧耗时自适应质量，保障交互流畅
     updateAdaptiveQuality(frameMs) {
-        // 指数滑动平均，降低波动
-        this.frameTimeAvgMs = this.frameTimeAvgMs * 0.9 + frameMs * 0.1;
+        // 禁用动态质量调整，保持稳定渲染避免频闪
+        this.dynamicQuality = 3; // 固定为高质量
+        
+        // 保持固定的渲染参数
+        this.currentSegments = 100; // 固定高质量段数
+        this.starfieldRedrawIntervalFrames = 240; // 固定星空重绘间隔
+        
+        // 固定目标帧率
+        this.targetFps = 60;
+        
+        // 固定DPR，避免动态调整
+        this.activeDPR = this.devicePixelRatio;
+        
+        // 固定粒子数量上限
+        this.effectiveMaxParticles = this.maxParticles;
+        
+        // 递增帧计数器
         this.frameCount++;
-
-        // 动态调节质量档位
-        if (this.frameTimeAvgMs > 22 && this.dynamicQuality > 1) {
-            this.dynamicQuality -= 1; // 降级
-        } else if (this.frameTimeAvgMs < 15 && this.dynamicQuality < 3) {
-            this.dynamicQuality += 1; // 升级
-        }
-
-        // 质量映射
-        this.currentSegments = this.dynamicQuality === 3 ? 100 : (this.dynamicQuality === 2 ? 70 : 40);
-        this.starfieldRedrawIntervalFrames = this.dynamicQuality === 3 ? 240 : (this.dynamicQuality === 2 ? 360 : 600);
-
-        // 动态目标帧率
-        if (this.frameTimeAvgMs > 28) this.targetFps = 20;
-        else if (this.frameTimeAvgMs > 20) this.targetFps = 30;
-        else this.targetFps = 60;
-
-        // 动态DPR降级（保障交互优先）
-        const desiredDpr = (this.frameTimeAvgMs > 26) ? 1.25 : (this.frameTimeAvgMs > 20 ? 1.5 : this.devicePixelRatio);
-        if (Math.abs((this.activeDPR || 1) - desiredDpr) > 0.05) {
-            this.activeDPR = desiredDpr;
-            // 重新应用DPR到画布
-            const rect = this.canvas.getBoundingClientRect();
-            this.canvas.width = Math.floor(rect.width * this.activeDPR);
-            this.canvas.height = Math.floor(rect.height * this.activeDPR);
-            this.ctx.setTransform(this.activeDPR, 0, 0, this.activeDPR, 0, 0);
-            // 相关资源需重建
-            this.buildStarfieldCanvas();
-        }
-
-        // 粒子上限按质量缩放，避免过载
-        const scale = this.dynamicQuality === 3 ? 1.0 : (this.dynamicQuality === 2 ? 0.7 : 0.45);
-        this.effectiveMaxParticles = Math.max(100, Math.floor(this.maxParticles * scale));
-
-        // 按一定帧间隔重建一次星空离屏缓存，避免每帧重绘
+        
+        // 按固定帧间隔重建星空离屏缓存
         if (this.frameCount % this.starfieldRedrawIntervalFrames === 0) {
             this.buildStarfieldCanvas();
         }
@@ -743,14 +724,15 @@ class BlackHoleSimulator {
         const segments = this.currentSegments || 80;
         for (let i = 0; i < segments; i++) {
             const t = i / segments * Math.PI * 2;
-            const brightness = 0.6 + 0.4 * Math.cos(t - time * this.blackHole.spin);
+            // 降低动画频率，减少闪烁
+            const brightness = 0.6 + 0.4 * Math.cos(t - time * this.blackHole.spin * 0.3);
             const alpha = 0.2 * brightness;
             
             // 主条带
             ctx.strokeStyle = `rgba(255,200,150,${alpha})`;
-            ctx.lineWidth = this.dynamicQuality >= 3 ? 3 : (this.dynamicQuality === 2 ? 2 : 1);
+            ctx.lineWidth = 3; // 固定线宽，避免动态变化
             ctx.shadowColor = `rgba(255,200,150,${alpha * 0.4})`;
-            ctx.shadowBlur = this.dynamicQuality >= 3 ? 5 : (this.dynamicQuality === 2 ? 3 : 1);
+            ctx.shadowBlur = 5; // 固定阴影模糊，避免动态变化
             ctx.beginPath();
             const rx = outer * Math.cos(t);
             const ry = outer * 0.35 * Math.sin(t);
@@ -761,7 +743,7 @@ class BlackHoleSimulator {
             // 发光条带
             ctx.shadowBlur = 0;
             ctx.strokeStyle = `rgba(255,255,200,${alpha * 0.6})`;
-            ctx.lineWidth = this.dynamicQuality === 1 ? 0.5 : 1;
+            ctx.lineWidth = 1; // 固定线宽
             ctx.stroke();
         }
 
@@ -799,9 +781,9 @@ class BlackHoleSimulator {
                 if (!lowQ && particle.trail && particle.trail.length > 1) {
                     // 轨迹发光
                     this.ctx.shadowColor = particle.color;
-                    this.ctx.shadowBlur = midQ ? 4 : 8;
+                    this.ctx.shadowBlur = 8; // 固定阴影模糊
                     this.ctx.strokeStyle = particle.color;
-                    this.ctx.lineWidth = midQ ? 2 : 3;
+                    this.ctx.lineWidth = 3; // 固定线宽
                     this.ctx.beginPath();
                     this.ctx.moveTo(particle.trail[0].x, particle.trail[0].y);
                     for (let i = 1; i < particle.trail.length; i++) {
@@ -811,7 +793,7 @@ class BlackHoleSimulator {
                     
                     // 轨迹渐变
                     this.ctx.shadowBlur = 0;
-                    this.ctx.lineWidth = midQ ? 1 : 1;
+                    this.ctx.lineWidth = 1; // 固定线宽
                     this.ctx.strokeStyle = '#ffffff';
                     this.ctx.stroke();
                 }
@@ -819,8 +801,8 @@ class BlackHoleSimulator {
                 // 粒子发光效果（按质量档位简化）
                 if (!lowQ) {
                     this.ctx.shadowColor = particle.color;
-                    this.ctx.shadowBlur = midQ ? 8 : 15;
-                    const glowRadius = particle.size * (midQ ? 1.6 : 2.0);
+                    this.ctx.shadowBlur = 15; // 固定高质量阴影模糊
+                    const glowRadius = particle.size * 2.0; // 固定高质量发光半径
                     const glowGradient = this.ctx.createRadialGradient(
                         particle.x, particle.y, 0,
                         particle.x, particle.y, glowRadius
@@ -838,7 +820,7 @@ class BlackHoleSimulator {
                 this.ctx.shadowBlur = 0;
                 this.ctx.fillStyle = '#ffffff';
                 this.ctx.beginPath();
-                this.ctx.arc(particle.x, particle.y, lowQ ? Math.max(0.6, particle.size * 0.8) : particle.size, 0, Math.PI * 2);
+                this.ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2); // 固定粒子大小
                 this.ctx.fill();
                 
                 this.ctx.restore();
@@ -868,11 +850,11 @@ class BlackHoleSimulator {
         }
         
         // 动态引力透镜发光边缘
-        const edgeRadius = this.blackHole.radius + 3 + Math.sin(time * 3) * 2;
+        const edgeRadius = this.blackHole.radius + 3 + Math.sin(time * 1.5) * 1; // 降低频率和幅度
         this.ctx.strokeStyle = 'rgba(255, 200, 150, 0.5)';
-        this.ctx.lineWidth = this.dynamicQuality === 1 ? 2 : 3;
+        this.ctx.lineWidth = 3; // 固定线宽
         this.ctx.shadowColor = 'rgba(255, 200, 150, 0.8)';
-        this.ctx.shadowBlur = this.dynamicQuality >= 3 ? 10 : (this.dynamicQuality === 2 ? 6 : 2);
+        this.ctx.shadowBlur = 10; // 固定阴影模糊
         this.ctx.beginPath();
         this.ctx.arc(this.blackHole.x, this.blackHole.y, edgeRadius, 0, Math.PI * 2);
         this.ctx.stroke();
@@ -888,8 +870,8 @@ class BlackHoleSimulator {
         this.ctx.setLineDash([]);
         
         // 黑洞中心脉冲
-        const pulseRadius = this.blackHole.radius * 0.3 + Math.sin(time * 5) * 5;
-        this.ctx.strokeStyle = `rgba(255, 100, 50, ${0.4 + Math.sin(time * 5) * 0.2})`;
+        const pulseRadius = this.blackHole.radius * 0.3 + Math.sin(time * 2) * 2; // 降低频率和幅度
+        this.ctx.strokeStyle = `rgba(255, 100, 50, ${0.4 + Math.sin(time * 2) * 0.1})`; // 降低透明度变化幅度
         this.ctx.lineWidth = 2;
         this.ctx.beginPath();
         this.ctx.arc(this.blackHole.x, this.blackHole.y, pulseRadius, 0, Math.PI * 2);
@@ -916,11 +898,11 @@ class BlackHoleSimulator {
         
         // 动态事件视界警告线
         const warningRadius = this.blackHole.radius * 2.5;
-        const warningAlpha = 0.5 + Math.sin(time * 2) * 0.2;
+        const warningAlpha = 0.5 + Math.sin(time * 1) * 0.1; // 降低频率和幅度
         this.ctx.strokeStyle = `rgba(255, 50, 50, ${warningAlpha})`;
-        this.ctx.lineWidth = this.dynamicQuality === 1 ? 2 : 3;
+        this.ctx.lineWidth = 3; // 固定线宽
         this.ctx.shadowColor = 'rgba(255, 50, 50, 0.5)';
-        this.ctx.shadowBlur = this.dynamicQuality >= 3 ? 8 : (this.dynamicQuality === 2 ? 4 : 1);
+        this.ctx.shadowBlur = 8; // 固定阴影模糊
         this.ctx.beginPath();
         this.ctx.arc(this.blackHole.x, this.blackHole.y, warningRadius, 0, Math.PI * 2);
         this.ctx.stroke();
