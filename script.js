@@ -1001,19 +1001,38 @@ class BlackHoleSimulator {
         this.showTrajectories = true;
         this.showAccretionDisk = true;
         
-        // 更新UI控件显示
-        document.getElementById('mass').value = 10;
-        document.getElementById('massValue').textContent = '10';
-        document.getElementById('spin').value = 0.5;
-        document.getElementById('spinValue').textContent = '0.5';
-        document.getElementById('particles').value = 500;
-        document.getElementById('particlesValue').textContent = '500';
-        document.getElementById('speed').value = 1.0;
-        document.getElementById('speedValue').textContent = '1.0';
-        document.getElementById('quality').value = 3;
-        document.getElementById('qualityValue').textContent = '高';
-        document.getElementById('stars').value = 250;
-        document.getElementById('starsValue').textContent = '250';
+        // 更新UI控件显示（先更新值，再更新显示文本）
+        const massSlider = document.getElementById('mass');
+        const spinSlider = document.getElementById('spin');
+        const particlesSlider = document.getElementById('particles');
+        const speedSlider = document.getElementById('speed');
+        const qualitySlider = document.getElementById('quality');
+        const starsSlider = document.getElementById('stars');
+        
+        if (massSlider) {
+            massSlider.value = 10;
+            document.getElementById('massValue').textContent = '10';
+        }
+        if (spinSlider) {
+            spinSlider.value = 0.5;
+            document.getElementById('spinValue').textContent = '0.5';
+        }
+        if (particlesSlider) {
+            particlesSlider.value = 500;
+            document.getElementById('particlesValue').textContent = '500';
+        }
+        if (speedSlider) {
+            speedSlider.value = 1.0;
+            document.getElementById('speedValue').textContent = '1.0';
+        }
+        if (qualitySlider) {
+            qualitySlider.value = 3;
+            document.getElementById('qualityValue').textContent = '高';
+        }
+        if (starsSlider) {
+            starsSlider.value = 250;
+            document.getElementById('starsValue').textContent = '250';
+        }
         
         // 恢复显示选项复选框
         const showGravityField = document.getElementById('showGravityField');
@@ -1026,7 +1045,7 @@ class BlackHoleSimulator {
         // 重新生成粒子
         this.createParticles();
         
-        // 更新黑洞信息显示
+        // 强制更新黑洞信息显示
         this.updateBlackHoleInfo();
         
         // 更新覆盖层状态
