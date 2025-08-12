@@ -977,10 +977,63 @@ class BlackHoleSimulator {
         document.getElementById('startBtn').textContent = '开始模拟';
         document.getElementById('startBtn').disabled = false;
         document.getElementById('pauseBtn').disabled = true;
+        
+        // 恢复黑洞参数到默认值
+        this.blackHole.mass = 10;
+        this.blackHole.spin = 0.5;
+        
+        // 恢复粒子数量到默认值
+        this.maxParticles = 500;
+        this.effectiveMaxParticles = 500;
+        
+        // 恢复模拟速度到默认值
+        this.simulationSpeed = 1.0;
+        
+        // 恢复渲染质量到默认值
+        this.renderQuality = 3;
+        this.dynamicQuality = 3;
+        
+        // 恢复背景恒星数量到默认值
+        this.stars = this.generateStars(250);
+        
+        // 恢复显示选项到默认值
+        this.showGravityField = true;
+        this.showTrajectories = true;
+        this.showAccretionDisk = true;
+        
+        // 更新UI控件显示
+        document.getElementById('mass').value = 10;
+        document.getElementById('massValue').textContent = '10';
+        document.getElementById('spin').value = 0.5;
+        document.getElementById('spinValue').textContent = '0.5';
+        document.getElementById('particles').value = 500;
+        document.getElementById('particlesValue').textContent = '500';
+        document.getElementById('speed').value = 1.0;
+        document.getElementById('speedValue').textContent = '1.0';
+        document.getElementById('quality').value = 3;
+        document.getElementById('qualityValue').textContent = '高';
+        document.getElementById('stars').value = 250;
+        document.getElementById('starsValue').textContent = '250';
+        
+        // 恢复显示选项复选框
+        const showGravityField = document.getElementById('showGravityField');
+        const showTrajectories = document.getElementById('showTrajectories');
+        const showAccretionDisk = document.getElementById('showAccretionDisk');
+        if (showGravityField) showGravityField.checked = true;
+        if (showTrajectories) showTrajectories.checked = true;
+        if (showAccretionDisk) showAccretionDisk.checked = true;
+        
+        // 重新生成粒子
         this.createParticles();
+        
+        // 更新黑洞信息显示
+        this.updateBlackHoleInfo();
         
         // 更新覆盖层状态
         this.updateOverlayInfo();
+        
+        // 显示重置提示
+        this.showNotification('模拟已重置到默认参数');
     }
     
     updateBlackHoleInfo() {
